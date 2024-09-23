@@ -1,29 +1,59 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"os"
 	"time"
 )
 
+const format = time.RFC3339
+
 var (
-	newTime      time.Time = time.Now().UTC()
-	noCreate               = flag.Bool("c", false, "do not create any files")
-	accessedOnly           = flag.Bool("a", false, "only changes the accessed time")
-	help                   = flag.Bool("help", false, "displays this help text and exits")
-	modOnly                = flag.Bool("m", false, "only changes the modified time")
+	newTime       time.Time = time.Now().UTC()
+	noCreate                = flag.Bool("c", false, "do not create any files")
+	accessedOnly            = flag.Bool("a", false, "only changes the accessed time")
+	help                    = flag.Bool("help", false, "displays this help text and exits")
+	modOnly                 = flag.Bool("m", false, "only changes the modified time")
+	referenceFile           = flag.String("r", "", "use the specified file's times instead of the current system time")
+	userTime                = flag.String("t", "", "-t sets a specified time instead of the default current system time")
 )
 
 func init() {
 	if len(os.Args) == 1 {
 		log.Fatal("Usage: touch <file1, file2 ... fileN>\n")
 	}
+
 	flag.BoolVar(noCreate, "no-create", false, "do not create any files")
+	flag.StringVar(referenceFile, "reference", "", "use this file's times insead of current time")
+
 	flag.Parse()
 
 	if *help {
 		flag.Usage()
 		os.Exit(0)
+	}
+
+	// Date from a reference file takes precedence over any supplied date string in this implementation. Check for either.
+	if len(*referenceFile) > 0 {
+		switch fi, err := os.Stat(*referenceFile); {
+		default:
+			newTime = fi.ModTime()
+			useCurrentTime = false
+		case errors.Is(err, os.ErrNotExist):
+			log.Printf("touch: failed to get attributes of %q: No such file or directory\n", *referenceFile)
+			fallthrough
+		case err != nil:
+			os.Exit(2)
+		}
+	} else if *userTime != "" {
+		t, err := time.Parse(format, *userTime)
+		if err != nil {
+			log.Printf("%q is invalid as a date of format: %q\n", *userTime, format)
+			os.Exit(1)
+		}
+		newTime = t
+		useCurrentTime = false
 	}
 }
