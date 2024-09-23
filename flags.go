@@ -18,6 +18,7 @@ var (
 	modOnly                 = flag.Bool("m", false, "only changes the modified time")
 	referenceFile           = flag.String("r", "", "use the specified file's times instead of the current system time")
 	userTime                = flag.String("t", "", "-t sets a specified time instead of the default current system time")
+	versionOnly             = flag.Bool("version", false, "output version information and exit")
 )
 
 func init() {
@@ -30,6 +31,11 @@ func init() {
 	flag.StringVar(referenceFile, "reference", "", "use this file's times insead of current time")
 
 	flag.Parse()
+
+	if *versionOnly {
+		println(version)
+		os.Exit(normalExitCode)
+	}
 
 	if *help {
 		flag.Usage()

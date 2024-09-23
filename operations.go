@@ -19,6 +19,10 @@ const (
 
 var useCurrentTime = true
 
+const (
+	version = "(touchwin) touch for Windows version: 0.1.0"
+)
+
 func create(file string) {
 	if *noCreate {
 		return
