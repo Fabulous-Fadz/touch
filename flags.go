@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -14,10 +15,15 @@ var (
 	newTime       time.Time = time.Now().UTC()
 	noCreate                = flag.Bool("c", false, "do not create any files")
 	accessedOnly            = flag.Bool("a", false, "only changes the accessed time")
+	_                       = flag.Bool("h", false, "currently ignored in this implementation")
 	help                    = flag.Bool("help", false, "displays this help text and exits")
+	_                       = flag.Bool("f", false, "(ignored)")
+	full                    = flag.Bool("full", false, "displays usage information, including exit codes. Assumes --help is specified")
 	modOnly                 = flag.Bool("m", false, "only changes the modified time")
+	_                       = flag.Bool("no-dereference", false, "currently ignored in this implementation")
 	referenceFile           = flag.String("r", "", "use the specified file's times instead of the current system time")
 	userTime                = flag.String("t", "", "-t sets a specified time instead of the default current system time")
+	versionOnly             = flag.Bool("version", false, "output version information and exit")
 )
 
 func init() {
@@ -31,9 +37,22 @@ func init() {
 
 	flag.Parse()
 
-	if *help {
-		flag.Usage()
+	if *versionOnly {
+		println(version)
 		os.Exit(normalExitCode)
+	}
+	if *help || *full {
+		flag.Usage()
+		if *full {
+			fmt.Println(fullHelp)
+		}
+		os.Exit(normalExitCode)
+	}
+
+	// I could just leave them both untouched but the user needs to think about their life choices very seriously.
+	// Not to nitpick... but why call a program that touches 2 dates and tell it not to touch either of them? What is that? Come on? Be serious!
+	if *modOnly && *accessedOnly {
+		log.Fatal("You cannot set both -a and -m. Specify just one or omit both of them to modify both dates.")
 	}
 
 	// Date from a reference file takes precedence over any supplied date string in this implementation. Check for either.
