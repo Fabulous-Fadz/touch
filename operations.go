@@ -12,11 +12,18 @@ func create(file string) {
 	if *noCreate {
 		return
 	}
+
 	f, err := os.Create(file)
 	if err != nil {
 		log.Fatalf("create: cannot create the file %q: %v\n", file, err)
 	}
 	f.Close()
+
+	// We can set the date to the one picked by the user...
+	if !useCurrentTime {
+		fi, _ := os.Stat(file) // It shouldn't fail seeing as we just created the file a nanosecond ago (or so)...
+		touch(fi)
+	}
 }
 
 func touch(fi os.FileInfo) {
