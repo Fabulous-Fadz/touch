@@ -46,6 +46,12 @@ func init() {
 		os.Exit(normalExitCode)
 	}
 
+	// I could just leave them both untouched but the user needs to think about their life choices very seriously.
+	// Not to nitpick... but why call a program that touches 2 dates and tell it not to touch either of them? What is that? Come on? Be serious!
+	if *modOnly && *accessedOnly {
+		log.Fatal("You cannot set both -a and -m. Specify just one or omit both of them to modify both dates.")
+	}
+
 	// Date from a reference file takes precedence over any supplied date string in this implementation. Check for either.
 	if len(*referenceFile) > 0 {
 		switch fi, err := os.Stat(*referenceFile); {
