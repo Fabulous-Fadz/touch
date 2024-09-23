@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+// The various exit codes used by touch when something goes wrong. Add new ones to the end to avoid changing these
+const (
+	normalExitCode = iota
+	_              // Skipping code 1 to leave it as unclassified in cases we use log.Fatal or log.Fatalf since that uses exit code 1.
+	unrecognizedFlagExitCode
+	noFilesExitCode
+	createFileExitCode
+	parseTimeExitCode
+	readFileAttributeExitCode
+)
+
 var useCurrentTime = true
 
 func create(file string) {
