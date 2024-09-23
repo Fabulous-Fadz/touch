@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var useCurrentTime = true
+
 func create(file string) {
 	if *noCreate {
 		return
