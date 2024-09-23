@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-var noCreate = flag.Bool("c", false, "do not create any files")
+var (
+	noCreate     = flag.Bool("c", false, "do not create any files")
+	accessedOnly = flag.Bool("a", false, "only changes the accessed time")
+)
 
 func main() {
 	if len(os.Args) == 1 {
@@ -41,9 +44,12 @@ func create(file string) {
 }
 
 func touch(fi os.FileInfo) {
-	now := time.Now().UTC()
+	var accessed, modded = time.Now().UTC(), time.Now().UTC()
+	if *accessedOnly {
+		modded = fi.ModTime().UTC()
+	}
 
-	if err := os.Chtimes(fi.Name(), now, now); err != nil {
+	if err := os.Chtimes(fi.Name(), accessed, modded); err != nil {
 		log.Printf("touch: could not change times for file %q: %v", fi.Name(), err)
 	}
 }
