@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const format = time.RFC3339
+
 var (
 	newTime       time.Time = time.Now().UTC()
 	noCreate                = flag.Bool("c", false, "do not create any files")
@@ -15,6 +17,7 @@ var (
 	help                    = flag.Bool("help", false, "displays this help text and exits")
 	modOnly                 = flag.Bool("m", false, "only changes the modified time")
 	referenceFile           = flag.String("r", "", "use the specified file's times instead of the current system time")
+	userTime                = flag.String("t", "", "-t sets a specified time instead of the default current system time")
 )
 
 func init() {
@@ -32,6 +35,7 @@ func init() {
 		os.Exit(0)
 	}
 
+	// Date from a reference file takes precedence over any supplied date string in this implementation. Check for either.
 	if len(*referenceFile) > 0 {
 		switch fi, err := os.Stat(*referenceFile); {
 		default:
@@ -43,5 +47,13 @@ func init() {
 		case err != nil:
 			os.Exit(2)
 		}
+	} else if *userTime != "" {
+		t, err := time.Parse(format, *userTime)
+		if err != nil {
+			log.Printf("%q is invalid as a date of format: %q\n", *userTime, format)
+			os.Exit(1)
+		}
+		newTime = t
+		useCurrentTime = false
 	}
 }
