@@ -22,7 +22,8 @@ var (
 
 func init() {
 	if len(os.Args) == 1 {
-		log.Fatal("Usage: touch <file1, file2 ... fileN>\n")
+		println("Usage: touch <file1, file2 ... fileN>\n")
+		os.Exit(noFilesExitCode)
 	}
 
 	flag.BoolVar(noCreate, "no-create", false, "do not create any files")
@@ -32,7 +33,7 @@ func init() {
 
 	if *help {
 		flag.Usage()
-		os.Exit(0)
+		os.Exit(normalExitCode)
 	}
 
 	// Date from a reference file takes precedence over any supplied date string in this implementation. Check for either.
@@ -45,13 +46,13 @@ func init() {
 			log.Printf("touch: failed to get attributes of %q: No such file or directory\n", *referenceFile)
 			fallthrough
 		case err != nil:
-			os.Exit(2)
+			os.Exit(readFileAttributeExitCode)
 		}
 	} else if *userTime != "" {
 		t, err := time.Parse(format, *userTime)
 		if err != nil {
 			log.Printf("%q is invalid as a date of format: %q\n", *userTime, format)
-			os.Exit(1)
+			os.Exit(parseTimeExitCode)
 		}
 		newTime = t
 		useCurrentTime = false
