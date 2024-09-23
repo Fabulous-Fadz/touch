@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -15,6 +16,7 @@ var (
 	noCreate                = flag.Bool("c", false, "do not create any files")
 	accessedOnly            = flag.Bool("a", false, "only changes the accessed time")
 	help                    = flag.Bool("help", false, "displays this help text and exits")
+	full                    = flag.Bool("full", false, "displays usage information, including exit codes. Assumes --help is specified")
 	modOnly                 = flag.Bool("m", false, "only changes the modified time")
 	referenceFile           = flag.String("r", "", "use the specified file's times instead of the current system time")
 	userTime                = flag.String("t", "", "-t sets a specified time instead of the default current system time")
@@ -36,9 +38,11 @@ func init() {
 		println(version)
 		os.Exit(normalExitCode)
 	}
-
-	if *help {
+	if *help || *full {
 		flag.Usage()
+		if *full {
+			fmt.Println(fullHelp)
+		}
 		os.Exit(normalExitCode)
 	}
 

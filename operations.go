@@ -20,7 +20,16 @@ const (
 var useCurrentTime = true
 
 const (
-	version = "(touchwin) touch for Windows version: 0.1.0"
+	version  = "(touchwin) touch for Windows version: 0.1.0"
+	fullHelp = `
+Exit Codes:
+0: Normal exit - everything is fine
+1: Unclassified error exit code
+2: Unrecognized flag error
+3: No files specified to touch
+4: Error creating a file
+5: Error parsing the specified time
+6: Error reading file attributes`
 )
 
 func create(file string) {
