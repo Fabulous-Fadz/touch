@@ -26,7 +26,8 @@ func create(file string) {
 
 	f, err := os.Create(file)
 	if err != nil {
-		log.Fatalf("create: cannot create the file %q: %v\n", file, err)
+		log.Printf("create: cannot create the file %q: %v\n", file, err)
+		os.Exit(createFileExitCode)
 	}
 	f.Close()
 
