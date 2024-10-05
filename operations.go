@@ -47,11 +47,11 @@ func create(file string) {
 	// We can set the date to the one picked by the user...
 	if !useCurrentTime {
 		fi, _ := os.Stat(file) // It shouldn't fail seeing as we just created the file a nanosecond ago (or so)...
-		touch(fi)
+		touch(fi, file)
 	}
 }
 
-func touch(fi os.FileInfo) {
+func touch(fi os.FileInfo, file string) {
 	var accessed, modded = newTime, newTime
 	if *accessedOnly {
 		modded = fi.ModTime().UTC()
@@ -59,7 +59,7 @@ func touch(fi os.FileInfo) {
 		accessed = time.Time{}
 	}
 
-	if err := os.Chtimes(fi.Name(), accessed, modded); err != nil {
+	if err := os.Chtimes(file, accessed, modded); err != nil {
 		log.Printf("touch: could not change times for file %q: %v", fi.Name(), err)
 	}
 }
