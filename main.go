@@ -15,7 +15,7 @@ func main() {
 
 		switch fi, err := os.Stat(file); {
 		default:
-			touch(fi)
+			touch(fi, file)
 		case errors.Is(err, os.ErrNotExist): // we don't have the file, create it.
 			create(file)
 		case err != nil:
